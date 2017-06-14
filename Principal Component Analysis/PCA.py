@@ -18,6 +18,10 @@
     
 #             7) Extract the max K eig_vector corresponding to max K eig_value 
     
+#             8) Project the samples to low-dimensional with w = eig_vector_K
+    
+#             9) Reduct the data   
+    
 import numpy as np
 
 def pca( data , K ):
@@ -52,17 +56,11 @@ def pca( data , K ):
     # Step : 9 Reduct the data
     recon_Data = np.dot( low_dim_data , eig_vector_K.transpose() ) + data_mean
     
-    print recon_Data
-    #$print low_dim_data
-    #print 'eig_vector',eig_vector
-    #print 'K',eig_vector_K
-    #print index
-    #print index_K
-    #print index
-    #print eig_value 
-    #print eig_vector
+    return low_dim_data, recon_Data
+
     
 if __name__== '__main__':
     ################
    train_data = np.array([[2,3,2,5],[0,1,2,1]])
-   pca( train_data , 4)
+   a , b = pca( train_data , 4)
+   print a , b
