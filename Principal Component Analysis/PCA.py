@@ -66,5 +66,9 @@ if __name__== '__main__':
    a , b = pca( train_data , 2)
    pca_data = PCA( n_components = 2, svd_solver = 'full' )
    pca_data.fit( train_data )
-   print pca_data.explained_variance_ratio_
-   print b
+   
+   low_dim = pca_data.fit_transform(train_data)
+   
+   print low_dim
+   #print '1', pca_data.explained_variance_ratio_
+   print '2', a
