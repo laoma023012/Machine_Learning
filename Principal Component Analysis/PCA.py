@@ -23,6 +23,7 @@
 #             9) Reduct the data   
     
 import numpy as np
+from sklearn.decomposition import PCA
 
 def pca( data , K ):
     
@@ -62,5 +63,8 @@ def pca( data , K ):
 if __name__== '__main__':
     ################
    train_data = np.array([[2,3,2,5],[0,1,2,1]])
-   a , b = pca( train_data , 4)
-   print a , b
+   a , b = pca( train_data , 2)
+   pca_data = PCA( n_components = 2, svd_solver = 'full' )
+   pca_data.fit( train_data )
+   print pca_data.explained_variance_ratio_
+   print b
