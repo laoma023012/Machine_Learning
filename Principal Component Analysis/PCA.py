@@ -14,9 +14,17 @@
 
 #             5) Calculate the feature vector
     
+#             6) Extract the max K eig_value
+    
+#             7) Extract the max K eig_vector corresponding to max K eig_value 
+    
 import numpy as np
 
-def pca( data ):
+def pca( data , K ):
+    
+    if K > data.shape[1]:
+         print 'K should be smaller than the dimensional of data'
+         return
     # Step : 1  For each sample X - mean(X )
     data_mean = np.mean(data, axis = 0)
     
@@ -24,20 +32,37 @@ def pca( data ):
     new_data = data - data_mean 
     
     # Step : 3 Calculate the covariance 
-    X_X_T = np.dot( new_data, new_data.transpose() )
+    X_T_X = np.dot( new_data.transpose(), new_data )
     
     # Step : 4 Calculate the feature value
-    eig_value , eig_vector = np.linalg.eig( X_X_T )
+    eig_value , eig_vector = np.linalg.eig( X_T_X )
     
     # Step : 5 Sort the eig_value
     index = np.argsort( eig_value )
     
-    #
-    print index
-    print eig_value 
-    print eig_vector
+    # Step : 6 Extract the max K eig_value
+    index_K = index[: -( K + 1 ): -1]
+    
+    # Step : 7 Extract the max K eig_vector corresponding to max K eig_value
+    eig_vector_K = eig_vector[:, index_K]
+    
+    # Step : 8 Project the samples to low-dimensional with w = eig_vector_K
+    low_dim_data = np.dot( data , eig_vector_K )
+    
+    # Step : 9 Reduct the data
+    recon_Data = np.dot( low_dim_data , eig_vector_K.transpose() ) + data_mean
+    
+    print recon_Data
+    #$print low_dim_data
+    #print 'eig_vector',eig_vector
+    #print 'K',eig_vector_K
+    #print index
+    #print index_K
+    #print index
+    #print eig_value 
+    #print eig_vector
     
 if __name__== '__main__':
     ################
    train_data = np.array([[2,3,2,5],[0,1,2,1]])
-   pca( train_data )
+   pca( train_data , 4)
