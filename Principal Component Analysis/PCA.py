@@ -64,10 +64,10 @@ if __name__== '__main__':
     ################
    train_data = np.array([[2,3,2,5],[0,1,2,1]])
    a , b = pca( train_data , 2)
-   pca_data = PCA( n_components = 2, svd_solver = 'full' )
-   pca_data.fit( train_data )
+   pca_data = PCA( n_components = 2)
+   # pca_data.fit( train_data )
    
-   low_dim = pca_data.fit_transform(train_data)
+   low_dim = pca_data.fit_transform(train_data.transpose())
    
    print low_dim
    #print '1', pca_data.explained_variance_ratio_
