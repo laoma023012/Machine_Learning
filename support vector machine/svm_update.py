@@ -178,7 +178,7 @@ class Support_Vector_Machine():
     # Ei = g(xi) - yi
     def function_E( self , certain_index ):
         E_1 = self.function_G( certain_index )       
-        E = E_1 - self.label[certain_index]      
+        E = np.sign(E_1) - self.label[certain_index]      
         
         return E           
        
