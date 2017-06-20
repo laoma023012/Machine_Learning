@@ -257,8 +257,8 @@ class Support_Vector_Machine():
         print 'b-update',b_new
         
         diff = np.linalg.norm(self.alpha - old_alpha)
-        if diff < self.epsilon:
-           self.stop_tag = True
+        #if diff < self.epsilon:
+          # self.stop_tag = True
         return
         
     # -------------------------------------------------------------------------
