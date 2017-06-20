@@ -8,7 +8,7 @@ import random
 class Support_Vector_Machine():
     
     # -------------------------------------------------------------------------
-    def __init__(self ,  data , label , C , max_iteration ):  
+    def __init__(self ,  data , label , C , max_iteration , epsilon ):  
       
       # -------- 终止标识符 ------------- 
       self.stop_tag = False       
@@ -42,6 +42,8 @@ class Support_Vector_Machine():
       self.update = False
       # --------------最优的 w 值 --------------------------------------
       self.best_w = None
+      # -------------- 收敛阈值 ---------------------------------------
+      self.epsilon = epsilon
       
   # ---------- Calculate the target function and save best if possible -------- 
     def Target_function( self ):
@@ -85,7 +87,7 @@ class Support_Vector_Machine():
     
       w_best = (-1)*float( self.best_w[1]) / ( float( self.best_w[0]) + 0.0001 )
       #print 'w_2 =',w_2
-      b_best = (-1)*self.best_b / float(self.best_w[1])
+      b_best = (-1)*self.best_b / float(self.best_w[1] + 0.0001 )
       #print 'b_2 =',b_2
     
       y = w_best * x + b_best
@@ -108,14 +110,17 @@ class Support_Vector_Machine():
   
  # --plot the line with w and b-----------------------------------------------------------    
     def plot_line( self ):
-     
+      #if self.stop_tag == True:
+      #    return
       plt.figure()
       x = np.linspace(0, 10, 1000)  
     
       w_2 = (-1)*float( self.w[1]) / ( float( self.w[0]) + 0.0001 )
-      #print 'w_2 =',w_2
+      #w_2 = -0.7
+      print 'w_2 =',w_2
       b_2 = (-1)*self.b / float(self.w[1])
-      #print 'b_2 =',b_2
+      #b_2 = 13.7
+      print 'b_2 =',b_2
     
       y = w_2 * x + b_2
       #print 'y', y
@@ -135,7 +140,9 @@ class Support_Vector_Machine():
       
       return
     # -------------------------------------------------------------------------
-    def param_w( self ):    
+    def param_w( self ):   
+     
+      
       w = 0
     
       for index in range(data.shape[0]):
@@ -180,11 +187,14 @@ class Support_Vector_Machine():
         for index in range( data.shape[0] ):
             self.E[index] = self.function_E( index )
         
-        print 'E_value',self.E
+        #print 'E_value',self.E
         return
     
     # ------ update alpha series ----------------------------------------------
     def alpha_and_b_update( self ):
+        if self.stop_tag == True:
+            return
+        old_alpha = self.alpha
         # Calculate yita = K11 + K22 - 2 * K12 
         yita = self.kernel( data[self.alpha_1_index] , data[self.alpha_1_index] ) +  self.kernel( data[self.alpha_2_index] ,data[self.alpha_2_index]) - 2 *  self.kernel( data[self.alpha_1_index] , data[self.alpha_2_index] )
         
@@ -194,7 +204,7 @@ class Support_Vector_Machine():
         alpha_2_new_unc = self.alpha[self.alpha_2_index] + self.label[self.alpha_2_index] \
                          * ( self.E[ self.alpha_1_index ] - self.E[ self.alpha_2_index ] ) / yita
                          
-        print 'alpha-2-new-unc',alpha_2_new_unc
+        #print 'alpha-2-new-unc',alpha_2_new_unc
         # --------------------- P126 最下方 ----------------------------------------------------------------
         if self.label[self.alpha_1_index] == self.label[self.alpha_2_index]:
             L = max( 0 , self.alpha[self.alpha_1_index] + self.alpha[self.alpha_2_index] - self.C )
@@ -219,6 +229,8 @@ class Support_Vector_Machine():
         self.alpha[self.alpha_1_index]  = alpha_1_new
         self.alpha[self.alpha_2_index]  = alpha_2_new
         
+        #print ("diff",diff)
+        
         #print 'alpha-1-new index',self.alpha_1_index,'alpha-2-new index',self.alpha_2_index
         #print 'alpha-1-new',alpha_1_new,'alpha-2-new',alpha_2_new
         #print 'alpha-update',self.alpha
@@ -242,8 +254,11 @@ class Support_Vector_Machine():
         
         self.b = b_new
         
-        #print 'b-update',b_new
+        print 'b-update',b_new
         
+        diff = np.linalg.norm(self.alpha - old_alpha)
+        if diff < self.epsilon:
+           self.stop_tag = True
         return
         
     # -------------------------------------------------------------------------
@@ -285,7 +300,7 @@ class Support_Vector_Machine():
             self.stop_tag = True
             self.alpha_1_index = None
         
-        print 'alpha-1-index',self.alpha_1_index
+        #print 'alpha-1-index',self.alpha_1_index
         return
         # ---------------------------------------------------------------------
     
@@ -294,6 +309,9 @@ class Support_Vector_Machine():
     #  根据 |E1 - E2| max 选取 最大的
     def search_best_alpha_2( self ):
         #self.E_value_update()
+        if self.stop_tag == True:
+            return
+        
         E1 = self.E[self.alpha_1_index]
         E_gap = []
         #print 'E_series',self.E
@@ -302,13 +320,13 @@ class Support_Vector_Machine():
             E_gap.append( E1 - self.E[index] ) 
             
         # --------------- Search the largest E value ------------------------
-        #print 'original_E',E
+        #print 'E_gap',E_gap
         
         #print 'E',E
         index = np.argsort( abs(np.array(E_gap)) )
         print 'E_change',E_gap[index.shape[0] - 1]
        
-        print 'index',index
+        #print 'index',index
         
         alpha_2_index = index[ index.shape[0] - 1 ]
         alpha_2_index_2 = index[ index.shape[0] - 2 ]
@@ -321,53 +339,73 @@ class Support_Vector_Machine():
         
         return 
       # -----------------------------------------------------------------------
+         
+    def predict(self):
+        predict_label = []
+        for index in range(data.shape[0]):
+            pred = np.dot( np.mat(self.w) , np.mat(data[index]).transpose() ) + self.b
+            print 'index ',index,' pred is ',pred
+            tmp_predict_label = np.sign(pred)
+            predict_label.append(tmp_predict_label)
+        
+        predict_label = np.array( predict_label).transpose()
+        print 'predict_label',predict_label   
     # --------------- train_process for Support Vector Machine ---------------- 
     def train( self ):
        Iter = 0  
        #print 'Iter',Iter
-       while  ( self.stop_tag == False ) and ( Iter < self.max_iteration ) :
+       while  ( self.stop_tag == False ) and ( Iter <= self.max_iteration ) :
           # -------- update -------------- 
           self.update = False
           
           print ' '
-          print 'E-value-update'
+          #print 'E-value-update'
           self.E_value_update()
           
-          print 'search-best-alpha-1'
+          #print 'search-best-alpha-1'
           self.search_best_alpha_1()
           
-          print 'search-best-alpha-2'
+          #print 'search-best-alpha-2'
           self.search_best_alpha_2()
           
-          print 'update alpha-and-b'
+          #print 'update alpha-and-b'
           self.alpha_and_b_update()
           
-          print 'calculate the param w'
+          #print 'calculate the param w'
           self.param_w()
           
-          #print 'Target_function'
-          #self.Target_function()
+          print 'Target_function'
+          self.Target_function()
           
-          #print 'best_plot'
-          #self.best_plot()
+          print 'predict_label'
+          self.predict()
           
-          print 'plot line'
-          self.plot_line()
+          #print self.stop_tag
+          #self.plot_line()
+          if Iter == self.max_iteration or self.stop_tag == True:
+            print 'line_plot'
+            self.plot_line()
+          
+          #print 'plot line'
+          #self.plot_line()
           
           Iter = Iter + 1
           print Iter
-        
+     
+          #print 'predict_label'
+       self.predict() 
       
 if __name__=='__main__':
     #data = np.array([[1,2],[2,4],[3,3],[6,6],[8,5],[9,9],[10,14]])
     #label = np.array([1, 1 , 1 ,-1,-1,-1,-1])
     #C = 0.2
-    data = np.array([[1,2],[2,4],[3,3],[5,5],[6,6],[8,5],[9,9],[10,14]])
-    label = np.array([1, 1 , 1 , 1, -1 , -1 , -1 , -1 ])
-    C = 200
-    Max_iterations = 20
+    data = np.array([[1,2],[2,4],[3,3],[5,5],[5,6],[6,6],[8,5],[9,9],[10,14]])
+    label = np.array([1, 1 , 1 , 1, -1 , -1 , -1 , -1, -1 ])
+    C = 2
+    Max_iterations = 500
+    epsilon = 0.001
     #-------------------主函数测试----------------------------------------
-    A = Support_Vector_Machine( data , label , C , Max_iterations)
+    A = Support_Vector_Machine( data , label , C , Max_iterations , epsilon )
     
     #--------------function_G 函数测试---------------------------------
     #C_1 = A.function_G( 1 )

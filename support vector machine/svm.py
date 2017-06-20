@@ -209,7 +209,7 @@ def train_svm( data , label , C ):
     
 
 if __name__=='__main__':
-    data = np.array([[1,2],[2,4],[3,3],[6,6],[8,5],[9,9],[10,14]])
-    label = np.array([1, 1 , 1 ,-1,-1,-1,-1])
+    data = np.array([[1,2],[2,4],[3,3],[5,5],[6,6],[8,5],[9,9],[10,14]])
+    label = np.array([1, 1 , 1 , 1 , -1 , -1 , -1 , -1 ])
     C = 0.002
     train_svm(data , label , C )
