@@ -66,7 +66,7 @@ def update_alpha_b( alpha , alpha_1_index , alpha_2_index , data , label , E1 , 
        alpha_2_new = alpha_2_new_unc
        
    alpha_1_new = alpha[alpha_1_index] + label[alpha_1_index] * label[alpha_2_index] * ( alpha[alpha_2_index] - alpha_2_new )
-   #print 'alpha_1_new',alpha_1_new
+   print 'alpha_2_new',alpha_2_new,'alpha_1_new',alpha_1_new
    #print 'alpha_1',alpha[alpha_1_index]
    alpha_new = copy.deepcopy(alpha)
    #print alpha_new
@@ -140,6 +140,7 @@ def _search_best_alpha_2( alpha , b , alpha_1_index, data, label, C ):
        E_value = function_E( alpha , data , label , index , b) 
        E2.append(E_value)
     
+    print 'E2',E2
     E = abs(E1 - E2)
     index = np.argsort(E)
     
@@ -194,7 +195,7 @@ def train_svm( data , label , C ):
     
     print ' '
     ## second round for alpha-1 and alpha-2 pick
-    for index in range(1000):
+    for index in range(20):
       alpha_1_index = _search_best_alpha_1_( alpha , b , data, label, C )
       alpha_2_index , E1 , E2 = _search_best_alpha_2( alpha , b , alpha_1_index , data , label , C )
       alpha , b = update_alpha_b( alpha , alpha_1_index , alpha_2_index , data , label , E1 , E2 , b , C )
@@ -208,7 +209,7 @@ def train_svm( data , label , C ):
     
 
 if __name__=='__main__':
-    data = np.array([[1,2],[2,4],[3,3],[8,5],[9,9],[10,14]])
-    label = np.array([1, 1 , 1 ,-1,-1,-1])
+    data = np.array([[1,2],[2,4],[3,3],[6,6],[8,5],[9,9],[10,14]])
+    label = np.array([1, 1 , 1 ,-1,-1,-1,-1])
     C = 0.002
     train_svm(data , label , C )
