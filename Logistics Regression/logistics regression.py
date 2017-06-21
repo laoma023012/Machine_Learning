@@ -12,7 +12,7 @@ class sigmoid():
       
   def sigmoid( self , inX ):
     
-    num =  1.0 / ( np.exp( inX ) )
+    num =  1.0 / ( np.exp( (-1) * inX ) )
     
     return num
     
@@ -22,6 +22,7 @@ class sigmoid():
     
     # convert label to matrix
     Label = np.mat( self.label ).transpose()
+    #print 'Label',Label
     
     # calculate row, col for data
     row , col = data.shape
@@ -34,12 +35,16 @@ class sigmoid():
         
         h = self.sigmoid( np.dot( Data , weights ) )
         
+        #print 'h = ',h
+        
         Error = Label - h
+        print 'Error',Error
         
         weights = weights + self.alpha * Data.transpose() * Error 
     
     self.weight = weights
     
+    #print 'weights',weights
     return self.weight
 
   def predict( self , data):
@@ -56,8 +61,8 @@ class sigmoid():
 if __name__=='__main__':
     
     data = np.array([[1,2],[2,4],[3,3],[5,5],[5,6],[6,6],[8,5],[9,9],[10,14]])
-    label = np.array([1, 1 , 1 , 1, 0 , 0 , 0 , 0, 0 ])
-    max_iterations = 200
+    label = np.array([1, 1 , 1 , 1, 0 ,0 , 0 , 0, 0 ])
+    max_iterations = 500
     alpha = 0.001
     A = sigmoid( data , label , max_iterations , alpha )
     A.train()
