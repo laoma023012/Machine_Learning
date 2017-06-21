@@ -194,7 +194,7 @@ class Support_Vector_Machine():
     def alpha_and_b_update( self ):
         if self.stop_tag == True:
             return
-        old_alpha = self.alpha
+        #old_alpha = self.alpha
         # Calculate yita = K11 + K22 - 2 * K12 
         yita = self.kernel( data[self.alpha_1_index] , data[self.alpha_1_index] ) +  self.kernel( data[self.alpha_2_index] ,data[self.alpha_2_index]) - 2 *  self.kernel( data[self.alpha_1_index] , data[self.alpha_2_index] )
         
@@ -256,7 +256,7 @@ class Support_Vector_Machine():
         
         print 'b-update',b_new
         
-        diff = np.linalg.norm(self.alpha - old_alpha)
+        #diff = np.linalg.norm(self.alpha - old_alpha)
         #if diff < self.epsilon:
           # self.stop_tag = True
         return
