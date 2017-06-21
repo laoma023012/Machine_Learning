@@ -1,18 +1,65 @@
 # -*- coding: utf-8 -*-
+import numpy as np
 
+class sigmoid():
+    
+  def __init__(self ,  data , label , max_iteration , alpha ): 
+      self.data = data
+      self.label = label 
+      self.max_iteration = max_iteration
+      self.alpha = alpha
+      self.weight = None
+      
+  def sigmoid( self , inX ):
+    
+    num =  1.0 / ( np.exp( inX ) )
+    
+    return num
+    
+  def GradAscent( self ):
+    # convert data to matrix
+    Data = np.mat( self.data )
+    
+    # convert label to matrix
+    Label = np.mat( self.label ).transpose()
+    
+    # calculate row, col for data
+    row , col = data.shape
+    
+    # init - weights
+    weights = np.mat( np.ones( col ) ).transpose()
+    
+    # loop for gradAscent
+    for index in range( self.max_iteration ):
+        
+        h = self.sigmoid( np.dot( Data , weights ) )
+        
+        Error = Label - h
+        
+        weights = weights + self.alpha * Data.transpose() * Error 
+    
+    self.weight = weights
+    
+    return self.weight
 
+  def predict( self , data):
+      
+      label = self.sigmoid( np.dot( data , self.weight ) )
+      #label = np.sign( label )
+      return label
+      
+  def train( self ):
+
+    self.GradAscent()
+     
+     
 if __name__=='__main__':
-    ################
-   train_data = np.array([[2,3,2,5],[0,1,2,1]])
-   # print train_data
-   label = [1,23,3,4]
-   solution = train(train_data, label )
-   print 'my method corref_', solution   
-   judge = predict( train_data, solution) 
-   print 'my_judge',judge
-   #################
-   clf = linear_model.LinearRegression()
-   clf.fit(np.transpose(train_data),label)
-   print 'official method corref_',clf.coef_
-   #print 'official_judge',judge 
-   predict = clf.decision_function(np.transpose(train_data))
+    
+    data = np.array([[1,2],[2,4],[3,3],[5,5],[5,6],[6,6],[8,5],[9,9],[10,14]])
+    label = np.array([1, 1 , 1 , 1, 0 , 0 , 0 , 0, 0 ])
+    max_iterations = 200
+    alpha = 0.001
+    A = sigmoid( data , label , max_iterations , alpha )
+    A.train()
+    label = A.predict( data )
+    print label
