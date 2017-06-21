@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+# GradAscent with full data
+
+
 import numpy as np
 
 class sigmoid():
@@ -9,12 +13,17 @@ class sigmoid():
       self.max_iteration = max_iteration
       self.alpha = alpha
       self.weight = None
-      
-  def sigmoid( self , inX ):
+  
+  def sigmoid ( self , x ):
+     
+      num =  1 / (1 + np.exp( -1 * x ))    
+     
+      return num  
+  #def sigmoid( self , inX ):
     
-    num =  1.0 / ( np.exp( (-1) * inX ) )
+   # num =  0.5 * ( 1 + np.tanh( 0.5 * inX ) )
     
-    return num
+    #return num
     
   def GradAscent( self ):
     # convert data to matrix
@@ -38,7 +47,7 @@ class sigmoid():
         #print 'h = ',h
         
         Error = Label - h
-        print 'Error',Error
+        #print 'Error',Error
         
         weights = weights + self.alpha * Data.transpose() * Error 
     
@@ -60,11 +69,14 @@ class sigmoid():
      
 if __name__=='__main__':
     
-    data = np.array([[1,2],[2,4],[3,3],[5,5],[5,6],[6,6],[8,5],[9,9],[10,14]])
-    label = np.array([1, 1 , 1 , 1, 0 ,0 , 0 , 0, 0 ])
+    data = np.array([[1,2],[2,4],[3,3],[5,5],[5,6],[6,6],[8,5],[9,10],[10,14]])
+    label = np.array([0, 0 , 0 , 0, 1 , 1 , 1 , 1, 1 ])
+    
     max_iterations = 500
-    alpha = 0.001
+    alpha = 0.002
+    
     A = sigmoid( data , label , max_iterations , alpha )
     A.train()
+    
     label = A.predict( data )
     print label
