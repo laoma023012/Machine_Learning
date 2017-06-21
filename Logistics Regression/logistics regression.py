@@ -2,6 +2,8 @@
 
 # GradAscent with full data
 
+#  alpha : learning rate
+#  max_iteration : max itertaions with full loop
 
 import numpy as np
 
